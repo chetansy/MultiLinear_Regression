@@ -84,3 +84,8 @@ summary(model_4)
 ## Final Model is model_4
 plot(model_4)
 hist(residuals(model_4))   ## close to normal distribution
+
+##Prediction
+
+predict_model<- predict(model_4,interval = 'predict')
+predict_model
