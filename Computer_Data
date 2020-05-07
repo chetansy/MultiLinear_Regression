@@ -1,0 +1,57 @@
+compsdata<- read.csv(file.choose())
+
+# to convert into numeric
+library(plyr)
+
+compsdata$cd <- as.numeric(revalue(compsdata$cd,c("yes"=1,"no"=0)))
+compsdata$multi <- as.numeric(revalue(compsdata$multi,c("yes"=1,"no"=0)))
+compsdata$premium <-as.numeric(revalue(compsdata$premium,c("yes"=1,"no"=0)))
+View(compsdata)
+attach(compsdata)
+summary(compsdata)
+
+plot(speed,price)
+plot(hd,price)
+plot(ram,price)
+plot(screen,price)
+plot(cd,price)
+plot(multi,price)
+plot(premium,price)
+plot(ads,price)
+plot(trend,price)
+
+## TO findout relation btween correlation between variables
+pairs(compsdata)
+cor(compsdata) ##correlation coefficient matrix
+
+##partial correlation matrix
+library(corpcor)
+cor2pcor(cor(compsdata))
+
+##Model building
+model<- lm(price~., data = compsdata[,-1])
+summary(model)
+## R-squared:  0.7756,	Adjusted R-squared:  0.7752 
+plot(model)
+library(car)
+
+avPlots(model)
+vif(model)
+
+influence.measures(model)
+influenceIndexPlot(model, id.n=3)
+influencePlot(model, id.n=3)
+
+## Regresssion model after deleting 1441th ,1701th observtn
+model_1<- lm(price~., data = compsdata[-c(1441,1701),-1])
+summary(model_1)
+##  R-squared:  0.7777,	Adjusted R-squared:  0.7774
+
+
+influence.measures(model_1)
+influenceIndexPlot(model_1, id.n=3)
+influencePlot(model_1, id.n=3)
+
+##final model is model_1
+plot(model_1)
+hist(residuals(model_1)) ##it follows normal distribution
