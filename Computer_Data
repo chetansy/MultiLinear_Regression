@@ -55,3 +55,7 @@ influencePlot(model_1, id.n=3)
 ##final model is model_1
 plot(model_1)
 hist(residuals(model_1)) ##it follows normal distribution
+
+## Prediction
+predict_model<- predict(model_1,interval = 'predict')
+predict_model
