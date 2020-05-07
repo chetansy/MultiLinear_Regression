@@ -1,0 +1,86 @@
+read.csv(file.choose())
+View(ToyotaCorolla)
+toyota <- ToyotaCorolla[c("Price","Age_08_04","KM","HP","cc","Doors","Gears","Quarterly_Tax","Weight")]
+
+View(toyota)
+attach(toyota)
+summary(toyota)
+
+plot(KM,Price)
+plot(HP,Price)
+plot(Age_08_04,Price)
+plot(cc, Price)
+plot(Cylinders,Price)
+plot(Gears,Price)
+plot(Doors,Price)
+plot(Weight,Price)
+plot(Quarterly_Tax,Price)
+
+pairs(toyota) ## To Find Correlationbetween all parameter
+cor(toyota)
+
+### Partial Correlation matrix - Pure Correlation  b/n the varibles
+library(corpcor)
+library(car)
+cor2pcor(cor(toyota))
+
+## Build Linear Model
+model<- lm(Price~., data = toyota)
+summary(model)  
+## R Squared = 0.863, Adjusted R Squared= 0.863 ;cc&Doors are insignificant each other
+
+## Applying VIF on Model Built
+##VIF to check collinearity btwn Variables
+vif(model)
+
+## AVPlot to check correlation btween variables
+avPlots(model)
+
+
+## Model Based on only CC
+model_cc<- lm(Price~cc,data = toyota)
+summary(model_cc)
+## R-squared:  0.01597,	Adjusted R-squared:  0.01529
+
+## Model Based on only Doors
+model_doors<- lm(Price~Doors,data = toyota)
+summary(model_doors)
+## R-squared:  0.03435,	Adjusted R-squared:  0.03367
+
+## Model Based on Both Varible
+model_cd<- lm(Price~Doors+cc,data = toyota)
+summary(model_cd)
+## squared:  0.04688,	Adjusted R-squared:  0.04555
+
+
+influence.measures(model_cd)
+influenceIndexPlot(model_cd, id.n=3)
+influencePlot(model_cd, id.n=3)
+
+## Regression Model After Deleting 81th observation ,which is influential
+model_2<-lm(Price~., data=toyota[-81,])
+summary(model_2)
+## R-squared:  0.8694,	Adjusted R-squared:  0.8686 
+
+influence.measures(model_2)
+influenceIndexPlot(model_2, id.n=3)
+influencePlot(model_2, id.n=3)
+
+## Regression Model After Deleting 81th and 222th observation,which is influential
+model_3<- lm(Price~., data = toyota[-c(81,222),])
+summary(model_3)
+##  R-squared:  0.8778,	Adjusted R-squared:  0.8772
+
+influence.measures(model_3)
+influenceIndexPlot(model_3, id.n=3)
+influencePlot(model_3, id.n=3)
+
+## Regression Model After Deleting 81th and 222th,961th observation,which is influential
+model_4<- lm(Price~., data = toyota[-c(81,222,961),])
+summary(model_4)
+## R-squared:  0.8852,	Adjusted R-squared:  0.8845 
+
+
+## Final Model is model_4
+plot(model_4)
+hist(residuals(model_4))   ## close to normal distribution
